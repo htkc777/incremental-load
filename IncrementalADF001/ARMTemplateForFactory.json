@@ -192,7 +192,7 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> SQLtable",
-						"source1 derive(Hash = toBinary(md5(name+homecountry+iplteam)),",
+						"source1 derive(Hash = toBinary(md5(name+iplteam)),",
 						"          dimidInt = toInteger(dimid),",
 						"          datemodified = currentDate()) ~> ComputeHash",
 						"ComputeHash, SQLtable lookup(dimidInt == SQLtable@dimid,",
