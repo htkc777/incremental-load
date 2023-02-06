@@ -1,0 +1,70 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Cricketdataset",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "cricketersdb",
+						"type": "DatasetReference"
+					},
+					"name": "SQLdb"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "ComputeHash"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "ConditionalSplit1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          dimid as string,",
+				"          name as string,",
+				"          age as string,",
+				"          homecountry as string,",
+				"          iplteam as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          dimid as integer,",
+				"          name as string,",
+				"          age as integer,",
+				"          homecountry as string,",
+				"          iplteam as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SQLdb",
+				"source1 derive(Hash = toBinary(md5(name+homecountry+iplteam)),",
+				"          dimidInt = toInteger(dimid),",
+				"          datemodified = currentDate()) ~> ComputeHash",
+				"ComputeHash, SQLdb lookup(dimidInt == SQLdb@dimid,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 split(isNull(SQLdb@dimid),",
+				"     isNull(SQLdb@dimid) && notEquals(hashcolumn, Hash),",
+				"     ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> ConditionalSplit1@(NewRecord, Update, NoUpdates)"
+			]
+		}
+	}
+}
