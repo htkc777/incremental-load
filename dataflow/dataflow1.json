@@ -28,7 +28,7 @@
 					"name": "lookup1"
 				},
 				{
-					"name": "ConditionalSplit1"
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
@@ -61,9 +61,8 @@
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookup1",
 				"lookup1 split(isNull(SQLdb@dimid),",
-				"     isNull(SQLdb@dimid) && notEquals(hashcolumn, Hash),",
 				"     ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> ConditionalSplit1@(NewRecord, Update, NoUpdates)"
+				"     disjoint: false) ~> split1@(NewRecords, Update, NoUpdates)"
 			]
 		}
 	}
