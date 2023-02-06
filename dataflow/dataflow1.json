@@ -138,6 +138,7 @@
 				"     insertable:true,",
 				"     updateable:true,",
 				"     upsertable:false,",
+				"     keys:['dimid'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
