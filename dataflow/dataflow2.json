@@ -80,7 +80,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"split1@Insert, select1 exists(Creation_Date == select1@dest_Creation_Date,",
+				"split1@Insert, select1 exists(Creation_Date <= select1@dest_Creation_Date,",
 				"     negate:true,",
 				"     broadcast: 'auto')~> exists1",
 				"exists1 sink(allowSchemaDrift: true,",
