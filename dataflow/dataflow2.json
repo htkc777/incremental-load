@@ -1,0 +1,79 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "IncreSourceTable",
+						"type": "DatasetReference"
+					},
+					"name": "sourcetable"
+				},
+				{
+					"dataset": {
+						"referenceName": "IncreDestination",
+						"type": "DatasetReference"
+					},
+					"name": "destinationtable"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as integer,",
+				"          first_name as string,",
+				"          Creation_Date as timestamp,",
+				"          Car_model as string,",
+				"          Modified_Date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourcetable",
+				"source(output(",
+				"          id as integer,",
+				"          first_name as string,",
+				"          Creation_Date as timestamp,",
+				"          Car_model as string,",
+				"          Last_Modified_Date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> destinationtable",
+				"sourcetable, select1 lookup(id == dest_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 split(ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> split1@(Insert)",
+				"destinationtable select(mapColumn(",
+				"          dest_id = id,",
+				"          dest_first_name = first_name,",
+				"          dest_Creation_Date = Creation_Date,",
+				"          dest_Car_model = Car_model,",
+				"          dest_Last_Modified_Date = Last_Modified_Date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"split1@Insert alterRow(insertIf(toTimestamp('Creation_Date','2022-09-30T21:19:00', 'yyyy-MM-dd\\'T\\'HH:mm:ss'))) ~> alterRow1"
+			]
+		}
+	}
+}
