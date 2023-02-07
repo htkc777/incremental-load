@@ -19,7 +19,15 @@
 					"name": "destinationtable"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "lookup1"
@@ -31,7 +39,7 @@
 					"name": "select1"
 				},
 				{
-					"name": "alterRow1"
+					"name": "exists1"
 				}
 			],
 			"scriptLines": [
@@ -61,7 +69,7 @@
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookup1",
-				"lookup1 split(ERROR_FUNCTION(''),",
+				"lookup1 split(true(),",
 				"     disjoint: false) ~> split1@(Insert)",
 				"destinationtable select(mapColumn(",
 				"          dest_id = id,",
@@ -72,7 +80,19 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"split1@Insert alterRow(insertIf(toTimestamp('Creation_Date','2022-09-30T21:19:00', 'yyyy-MM-dd\\'T\\'HH:mm:ss'))) ~> alterRow1"
+				"split1@Insert, select1 exists(Creation_Date == select1@dest_Creation_Date,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists1",
+				"exists1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
