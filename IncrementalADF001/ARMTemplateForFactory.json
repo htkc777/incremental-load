@@ -75,6 +75,136 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/cricketersCSV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Cricketers.csv",
+						"fileSystem": "input-incremental"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "dimid",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "age",
+						"type": "String"
+					},
+					{
+						"name": "homecountry",
+						"type": "String"
+					},
+					{
+						"name": "iplteam",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/cricketersSQLdata')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "dimid",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "age",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "homecountry",
+						"type": "nvarchar"
+					},
+					{
+						"name": "iplteam",
+						"type": "nvarchar"
+					},
+					{
+						"name": "lastmodifieddate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "hashcolumn",
+						"type": "binary"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "cricketers"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/outputBlobSink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "output-incremental"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -286,7 +416,113 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/cricketersSQLdata')]",
+			"name": "[concat(parameters('factoryName'), '/dataflow2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "IncreSourceTable",
+								"type": "DatasetReference"
+							},
+							"name": "sourcetable"
+						},
+						{
+							"dataset": {
+								"referenceName": "IncreDestination",
+								"type": "DatasetReference"
+							},
+							"name": "destinationtable"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "exists1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id as integer,",
+						"          first_name as string,",
+						"          Creation_Date as timestamp,",
+						"          Car_model as string,",
+						"          Modified_Date as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> sourcetable",
+						"source(output(",
+						"          id as integer,",
+						"          first_name as string,",
+						"          Creation_Date as timestamp,",
+						"          Car_model as string,",
+						"          Last_Modified_Date as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> destinationtable",
+						"sourcetable, select1 lookup(id == dest_id,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 split(true(),",
+						"     disjoint: false) ~> split1@(Insert)",
+						"destinationtable select(mapColumn(",
+						"          dest_id = id,",
+						"          dest_first_name = first_name,",
+						"          dest_Creation_Date = Creation_Date,",
+						"          dest_Car_model = Car_model,",
+						"          dest_Last_Modified_Date = Last_Modified_Date",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"split1@Insert, select1 exists(Creation_Date == select1@dest_Creation_Date,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> exists1",
+						"exists1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/IncreSourceTable')]",
+				"[concat(variables('factoryId'), '/datasets/IncreDestination')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IncreSourceTable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -298,41 +534,34 @@
 				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "dimid",
+						"name": "id",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "name",
-						"type": "nvarchar"
+						"name": "first_name",
+						"type": "varchar"
 					},
 					{
-						"name": "age",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "homecountry",
-						"type": "nvarchar"
-					},
-					{
-						"name": "iplteam",
-						"type": "nvarchar"
-					},
-					{
-						"name": "lastmodifieddate",
+						"name": "Creation_Date",
 						"type": "datetime",
 						"precision": 23,
 						"scale": 3
 					},
 					{
-						"name": "hashcolumn",
-						"type": "binary"
+						"name": "Car_model",
+						"type": "varchar"
+					},
+					{
+						"name": "Modified_Date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
 					}
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "cricketers"
+					"table": "Source_Table"
 				}
 			},
 			"dependsOn": [
@@ -340,79 +569,71 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/cricketersCSV')]",
+			"name": "[concat(parameters('factoryName'), '/IncreDestination')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
+					"referenceName": "AzureSqlDatabase1",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "Cricketers.csv",
-						"fileSystem": "input-incremental"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
+				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "dimid",
-						"type": "String"
+						"name": "id",
+						"type": "int",
+						"precision": 10
 					},
 					{
-						"name": "name",
-						"type": "String"
+						"name": "first_name",
+						"type": "varchar"
 					},
 					{
-						"name": "age",
-						"type": "String"
+						"name": "Creation_Date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
 					},
 					{
-						"name": "homecountry",
-						"type": "String"
+						"name": "Car_model",
+						"type": "varchar"
 					},
 					{
-						"name": "iplteam",
-						"type": "String"
+						"name": "Last_Modified_Date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
 					}
-				]
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Destination_Table"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/outputBlobSink')]",
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
+					"referenceName": "AzureSqlDatabase1",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "AzureSqlTable",
+				"schema": [],
 				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileSystem": "output-incremental"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
+					"schema": "dbo",
+					"table": "Destination_Table"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
 			]
 		}
 	]
