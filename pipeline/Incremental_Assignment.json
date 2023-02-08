@@ -42,7 +42,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select MAX(Modified_Date) from Srce_Incr_table",
+							"value": "select MAX(Modified_Date) as NewWatermarkvalue from Srce_Incr_table",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -83,7 +83,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select * from Srce_Incr_table where Modified_Date > '@{activity('LookupOldWaterMarkActivity').output.firstRow.Dest_Creation_Date}' and \nModified_Date <='@{activity('LookupNewWaterMarkActivity').output.firstRow.Creation_Date}'",
+							"value": "select * from Srce_Incr_table where Modified_Date > '@{activity('LookupOldWaterMarkActivity').output.firstRow.WatermarkValue}' and Modified_Date <= '@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -154,7 +154,7 @@
 						},
 						"Modified_Date": {
 							"value": {
-								"value": "@{activity('LookupNewWaterMarkActivity').output.firstRow.Newdest_Incr_table}",
+								"value": "@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}",
 								"type": "Expression"
 							},
 							"type": "DateTime"
