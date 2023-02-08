@@ -144,7 +144,7 @@
 								"value": "@{activity('LookupOldWaterMarkActivity').output.firstRow.id}",
 								"type": "Expression"
 							},
-							"type": "Int32"
+							"type": "Int64"
 						},
 						"Modified_Date": {
 							"value": {
