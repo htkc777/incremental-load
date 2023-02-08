@@ -21,7 +21,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "Srce_Incr_table",
+						"referenceName": "dest_Incr_table",
 						"type": "DatasetReference"
 					}
 				}
@@ -49,7 +49,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "dest_Incr_table",
+						"referenceName": "Srce_Incr_table",
 						"type": "DatasetReference"
 					}
 				}
