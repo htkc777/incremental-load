@@ -5,10 +5,6 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "IncreSourceTable",
-						"type": "DatasetReference"
-					},
 					"name": "sourcetable"
 				},
 				{
@@ -48,9 +44,7 @@
 				"          Modified_Date as timestamp",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> sourcetable",
+				"     validateSchema: false) ~> sourcetable",
 				"source(output(",
 				"          id as integer,",
 				"          first_name as string,",
