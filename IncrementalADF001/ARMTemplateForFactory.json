@@ -843,7 +843,7 @@
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "Srce_Incr_table",
+								"referenceName": "dest_Incr_table",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -872,7 +872,7 @@
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "dest_Incr_table",
+								"referenceName": "Srce_Incr_table",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1000,8 +1000,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Srce_Incr_table')]",
 				"[concat(variables('factoryId'), '/datasets/dest_Incr_table')]",
+				"[concat(variables('factoryId'), '/datasets/Srce_Incr_table')]",
 				"[concat(variables('factoryId'), '/datasets/outputincrement')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
 			]
