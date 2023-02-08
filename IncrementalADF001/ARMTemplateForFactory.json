@@ -865,7 +865,7 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "select MAX(Modified_Date) as Newdest_Incr_table from Srce_Incr_table",
+									"value": "select MAX(Modified_Date) as dest_Incr_table from Srce_Incr_table",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
