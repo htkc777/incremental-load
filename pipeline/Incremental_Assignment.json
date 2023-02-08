@@ -83,7 +83,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select * from Srce_Incr_table where Modified_Date >\n'@{activity('LookupOldWaterMarkActivity').output.firstRow.Dest_Creation_Date}' and \nModified_Date <= '@{activity('LookupNewWaterMarkActivity').output.firstRow.NewDest_Creation_Date}'",
+							"value": "select * from Srce_Incr_table where Modified_Date > '@{activity('LookupOldWaterMarkActivity').output.firstRow.Dest_Creation_Date}' and \nModified_Date <='@{activity('LookupNewWaterMarkActivity').output.firstRow.NewDest_Creation_Date}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
