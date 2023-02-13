@@ -1,0 +1,33 @@
+{
+	"name": "AzureSqlTable2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "TABLE_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "WaterMark_column",
+				"type": "varchar"
+			},
+			{
+				"name": "TableType",
+				"type": "varchar"
+			},
+			{
+				"name": "StoreProcedureNameForMergeOperation",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "config"
+		}
+	}
+}
