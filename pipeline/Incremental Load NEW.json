@@ -85,6 +85,7 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
+									"sqlReaderQuery": "select MAX({item.WaterMark.Column}) as NewWatermarkvalue from @{item.TABLE_NAME}",
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
