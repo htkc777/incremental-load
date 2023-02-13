@@ -14,6 +14,10 @@
 					"value": "@CONCAT('Incremental-', pipeline().RunId, '.csv')",
 					"type": "Expression"
 				},
+				"folderPath": {
+					"value": "@concat(formatDateTime(utcnow(),'yyyy'),'/',formatDateTime(utcnow(),'MM'),'/',formatDateTime(utcnow(),'dd'),'/')\n\n",
+					"type": "Expression"
+				},
 				"fileSystem": "output-incremental"
 			},
 			"columnDelimiter": ",",
