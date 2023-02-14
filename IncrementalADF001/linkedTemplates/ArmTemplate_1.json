@@ -422,7 +422,7 @@
 							"storedProcedureParameters": {
 								"NewTime": {
 									"value": {
-										"value": "@activity('LKP_OldWaterMarkValue').output.firstRow.NewWaterMarkValue",
+										"value": "@activity('LKP_NewWaterMarkValue').output.firstRow.NewWaterMarkValue\n\n\n",
 										"type": "Expression"
 									},
 									"type": "DateTime"
