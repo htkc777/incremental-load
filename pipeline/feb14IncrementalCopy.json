@@ -1,5 +1,5 @@
 {
-	"name": "pipelinefeb14IncrementalCopy",
+	"name": "feb14IncrementalCopy",
 	"properties": {
 		"activities": [
 			{
