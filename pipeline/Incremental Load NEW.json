@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get-Table",
+				"name": "Get-Tables",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -32,7 +32,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Get-Table",
+						"activity": "Get-Tables",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -41,7 +41,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get-Table').output.value",
+						"value": "@activity('Get-Tables').output.value",
 						"type": "Expression"
 					},
 					"activities": [
@@ -60,7 +60,10 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderQuery": "select *from watermarktable1 where tablename = '@{item().TABLE_NAME}'\n",
+									"sqlReaderQuery": {
+										"value": "select *from watermarktable1 where tablename = '@{item().TABLE_NAME}'\n",
+										"type": "Expression"
+									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
@@ -85,15 +88,62 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderQuery": "select MAX({item.WaterMark.Column}) as NewWatermarkvalue from @{item.TABLE_NAME}",
+									"sqlReaderQuery": {
+										"value": "select MAX(@{item().WaterMark_Column}) as NewWatermarkvalue from @{item().TABLE_NAME}\n",
+										"type": "Expression"
+									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
 								"dataset": {
-									"referenceName": "AzureSqlTable2",
+									"referenceName": "AzureSqlTable3",
 									"type": "DatasetReference"
 								}
 							}
+						},
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "LookupOldWaterMarkAtivity",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "LookupNewWaterMarkAtivity",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "Select *from @{item().TABLE_NAME} where\n@{item().WaterMark_Column} >\n'@{activity('LookupOldWaterMarkActivity').output.firstRow.lastmodified}'\nand @{item().WaterMark_Column} <=\n'@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}'",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSqlTable2",
+									"type": "DatasetReference"
+								}
+							]
 						}
 					]
 				}
