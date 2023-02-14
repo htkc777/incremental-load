@@ -590,7 +590,7 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "SELECT OrederID, ProductID,CustomerID ,UnitPrice ,Quantity,InsertDateTime FROM dbo.orders WHERE InsertDateTime > \n'@{activity('LKP_OldWaterMarkValue').output.firstRow.WaterMarkValue}'\nAND InsertDateTime <= '@{activity('LKP_NewWaterMarkValue').output.firstRow.NewWaterMarkValue}'\n\n\n\n\n\n\n\n\n",
+									"value": "SELECT OrederID,ProductID,CustomerID,UnitPrice,Quantity,InsertDateTime FROM dbo.orders \nWHERE InsertDateTime > \n'@{activity('LKP_OldWaterMarkValue').output.firstRow.WaterMarkValue}'\nAND \nInsertDateTime <= '@{activity('LKP_NewWaterMarkValue').output.firstRow.NewWaterMarkValue}'\n\n\n\n\n\n\n\n\n",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -777,62 +777,6 @@
 					"schema": "dbo",
 					"table": "Destination_Table"
 				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable2')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase2",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "TABLE_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "WaterMark_column",
-						"type": "varchar"
-					},
-					{
-						"name": "TableType",
-						"type": "varchar"
-					},
-					{
-						"name": "StoreProcedureNameForMergeOperation",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "config"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase2')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable3')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
