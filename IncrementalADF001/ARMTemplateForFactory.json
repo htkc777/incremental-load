@@ -524,7 +524,6 @@
 						"typeProperties": {
 							"source": {
 								"type": "AzureSqlSource",
-								"sqlReaderQuery": "Select TableName,WaterMarkValue from dbo.watermarktable WHERE TableName = 'orders'",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
@@ -590,7 +589,7 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "SELECT OrederID,ProductID,CustomerID,UnitPrice,Quantity,InsertDateTime FROM dbo.orders \nWHERE InsertDateTime > \n'@{activity('LKP_OldWaterMarkValue').output.firstRow.WaterMarkValue}'\nAND \nInsertDateTime <= '@{activity('LKP_NewWaterMarkValue').output.firstRow.NewWaterMarkValue}'\n\n\n\n\n\n\n\n\n",
+									"value": "select * FROM dbo.orders where InsertDateTime >'@{activity('LKP_OldWaterMarkValue').output.firstRow.WaterMarkValue}'\nand InsertDateTime <= '@{activity('LKP_NewWaterMarkValue').output.firstRow.NewWaterMarkValue}'\n\n\n\n\n\n\n\n\n",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
