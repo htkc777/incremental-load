@@ -1,0 +1,9 @@
+{
+	"name": "foldermanagementADF",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "361315ee-1098-4ec1-b3fd-b16cc83e7972",
+		"tenantId": "90d12e33-ad5e-4e82-8b5e-82bff0658ae0"
+	}
+}
