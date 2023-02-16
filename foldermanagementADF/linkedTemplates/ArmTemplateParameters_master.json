@@ -20,6 +20,9 @@
 		"AzureSqlDatabase_connection_upsert_connectionString": {
 			"value": ""
 		},
+		"SinkLinkedServ_connectionString": {
+			"value": ""
+		},
 		"SourceLinkedServ_connectionString": {
 			"value": ""
 		},

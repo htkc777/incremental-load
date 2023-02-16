@@ -27,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase_connection_upsert'"
 		},
+		"SinkLinkedServ_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SinkLinkedServ'"
+		},
 		"SourceLinkedServ_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SourceLinkedServ'"
@@ -80,6 +84,9 @@
 					},
 					"AzureSqlDatabase_connection_upsert_connectionString": {
 						"value": "[parameters('AzureSqlDatabase_connection_upsert_connectionString')]"
+					},
+					"SinkLinkedServ_connectionString": {
+						"value": "[parameters('SinkLinkedServ_connectionString')]"
 					},
 					"SourceLinkedServ_connectionString": {
 						"value": "[parameters('SourceLinkedServ_connectionString')]"
