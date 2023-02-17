@@ -1,5 +1,5 @@
 {
-	"name": "Incremental Pipeline",
+	"name": "Incremental Using DataFlowPipeline",
 	"properties": {
 		"activities": [
 			{

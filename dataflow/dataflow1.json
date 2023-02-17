@@ -6,14 +6,14 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "cricketersCSV",
+						"referenceName": "CricketersCSV",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
 				},
 				{
 					"dataset": {
-						"referenceName": "cricketersSQLdata",
+						"referenceName": "CricketersSQLdata",
 						"type": "DatasetReference"
 					},
 					"name": "SQLtable"
@@ -22,21 +22,21 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "cricketersSQLdata",
+						"referenceName": "CricketersSQLdata",
 						"type": "DatasetReference"
 					},
 					"name": "SQLInsert1"
 				},
 				{
 					"dataset": {
-						"referenceName": "cricketersSQLdata",
+						"referenceName": "CricketersSQLdata",
 						"type": "DatasetReference"
 					},
 					"name": "SQLUpdate1"
 				},
 				{
 					"dataset": {
-						"referenceName": "outputBlobSink",
+						"referenceName": "CricketOutputBlobSink",
 						"type": "DatasetReference"
 					},
 					"name": "sink1",
