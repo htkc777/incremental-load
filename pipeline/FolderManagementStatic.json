@@ -96,7 +96,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"outputDp": {
-								"value": "@concat(substring(activity('Get FileLastModified').output.lastModified,0,4),'/',substring(activity('Get FileLastModified').output.lastModified,5,2),'/',substring(activity('Get FileLastModified').output.lastModified,8,2),'/','Invoice_TB.csv')",
+								"value": "@concat(substring(activity('Get FileLastModified').output.lastModified,0,4),substring(activity('Get FileLastModified').output.lastModified,5,2),'Invoice_TB.csv')",
 								"type": "Expression"
 							}
 						}
